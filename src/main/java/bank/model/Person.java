@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author m27
  */
-public class Person {
+public class Person implements Comparable {
 
     private String fullname;
     private Date birthday;
@@ -27,6 +27,19 @@ public class Person {
     public Person(String fullname, Date birthday) {
         this.fullname = fullname;
         this.birthday = birthday;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof Person)) {
+            throw new UnsupportedOperationException("Type must be Person");
+        }
+        return this.fullname.compareTo(((Person) o).fullname);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Person: %s", fullname);
     }
 
 }

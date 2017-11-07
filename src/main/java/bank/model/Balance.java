@@ -11,9 +11,9 @@ package bank.model;
  */
 public final class Balance {
 
-    private double amount;
+    private Double amount;
 
-    public double getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
