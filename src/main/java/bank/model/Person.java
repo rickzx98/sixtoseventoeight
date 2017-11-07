@@ -15,6 +15,7 @@ public class Person implements Comparable {
 
     private String fullname;
     private Date birthday;
+    private Gender gender;
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
@@ -24,9 +25,18 @@ public class Person implements Comparable {
         this.birthday = birthday;
     }
 
-    public Person(String fullname, Date birthday) {
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public Person(String fullname, Date birthday, Gender gender) {
         this.fullname = fullname;
         this.birthday = birthday;
+        this.gender = gender;
     }
 
     @Override
@@ -40,6 +50,10 @@ public class Person implements Comparable {
     @Override
     public String toString() {
         return String.format("Person: %s", fullname);
+    }
+
+    public static enum Gender {
+        MALE, FEMALE
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package bank.model;
 
+import bank.model.Person.Gender;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,8 +51,8 @@ public class Account {
         this.balance = balance;
     }
 
-    public static Account loadAccount(String accountNumber, String fullname, Date birthDate, double balance) {
-        return new Account(accountNumber, new Person(fullname, birthDate), Balance.createBalanceWithAmount(balance));
+    public static Account loadAccount(String accountNumber, String fullname, Date birthDate, Person.Gender gender, double balance) {
+        return new Account(accountNumber, new Person(fullname, birthDate, gender), Balance.createBalanceWithAmount(balance));
     }
 
     public Balance getBalance() {
@@ -69,6 +70,5 @@ public class Account {
     public String getAccountNumber() {
         return accountNumber;
     }
-    
-    
+
 }

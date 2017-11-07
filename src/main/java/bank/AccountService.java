@@ -6,11 +6,14 @@
 package bank;
 
 import bank.model.Account;
+import bank.model.Person;
 import bank.model.Transaction;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -20,14 +23,24 @@ public class AccountService {
 
     public static void main(String... args) {
         List<Account> accounts = new ArrayList<>();
-        accounts.add(createJericAccount());
-        accounts.add(createNicaAccount());
-        accounts.add(createAnaAccount());
-        accounts.add(createMinhoAccount());
+        // accounts.add(createJericAccount());
+        // accounts.add(createNicaAccount());
+        // accounts.add(createAnaAccount());
+        //accounts.add(createMinhoAccount());
+
+        // get account names
+        // map uppercase 
+        // filter MALE
+        // print out result
     }
 
+    /**
+     * Stream - forEach - filter - map
+     *
+     * @return
+     */
     static Account createJericAccount() {
-        Account account = Account.loadAccount("00001", "Jerico DG", new Date(), 10000.00);
+        Account account = Account.loadAccount("00001", "Jerico DG", new Date(), Person.Gender.MALE, 10000.00);
         account.deposit(20000);
         account.debit(199);
         account.debit(135);
@@ -56,21 +69,27 @@ public class AccountService {
             }
         }
 
-        // get ammount 
-        double withdrawalAmount = 0;
+        List<Double> amounts = new ArrayList<>();
+
         for (Transaction withdraw : withdrawals) {
-            withdrawalAmount += withdraw.getTransactionAmount();
+            amounts.add(withdraw.getTransactionAmount());
         }
 
-        System.out.println(withdrawals);
-        System.out.println(withdrawalAmount);
+        for (Double amount : amounts) {
+            System.out.println("amount: " + amount);
+        }
 
         // refactor using java 8 stream
         return account;
     }
 
+    /**
+     * Stream - reduce
+     *
+     * @return
+     */
     static Account createNicaAccount() {
-        Account account = Account.loadAccount("00002", "Nica DG", new Date(), 10000.00);
+        Account account = Account.loadAccount("00002", "Nica DG", new Date(), Person.Gender.FEMALE, 10000.00);
         account.deposit(200000);
         account.debit(199);
         account.debit(135);
@@ -89,11 +108,25 @@ public class AccountService {
         account.debit(1993);
         account.debit(18);
         account.transfer(5000, "000001");
+
+        double totalDebitAmount;
+        totalDebitAmount = account.getTransactions().stream()
+                .filter(trasaction -> trasaction.getTransactionType().equals(Transaction.TransactionType.DEBIT))
+                .map(transaction -> transaction.getTransactionAmount())
+                .reduce(0.00, (current, amount) -> current + amount);
+
+        System.out.println("Nica total debit amount: " + totalDebitAmount);
+
         return account;
     }
 
+    /**
+     * Stream -sum - min - max - count
+     *
+     * @return
+     */
     static Account createAnaAccount() {
-        Account account = Account.loadAccount("00003", "Ana DG", new Date(), 10000.00);
+        Account account = Account.loadAccount("00003", "Ana DG", new Date(), Person.Gender.FEMALE, 10000.00);
         account.deposit(400000);
         account.debit(199);
         account.debit(135);
@@ -113,11 +146,36 @@ public class AccountService {
         account.debit(18);
         account.transfer(5000, "000002");
         account.deposit(20000);
+
+        // get total amount deposit
+        List<Transaction> transactions = account.getTransactions();
+
+        double totalDeposit = transactions.stream().filter(transaction -> transaction.getTransactionType().equals(Transaction.TransactionType.DEPOSIT))
+                .mapToDouble(Transaction::getTransactionAmount)
+                .sum();
+
+        System.out.println(String.format("Total deposit of Ana DG: %f ", totalDeposit));
+
+        double highestDesposit = transactions.stream()
+                .filter(transaction -> transaction.getTransactionType().equals(Transaction.TransactionType.DEPOSIT))
+                .mapToDouble(Transaction::getTransactionAmount)
+                .max().getAsDouble();
+
+        double lowestDesposit = transactions.stream()
+                .filter(transaction -> transaction.getTransactionType().equals(Transaction.TransactionType.DEPOSIT))
+                .mapToDouble(Transaction::getTransactionAmount)
+                .min().getAsDouble();
+
         return account;
     }
 
+    /**
+     * Stream - collect - toList - groupingBy - findFirst
+     *
+     * @return
+     */
     static Account createMinhoAccount() {
-        Account account = Account.loadAccount("00004", "Yoo MinHo", new Date(), 10000.00);
+        Account account = Account.loadAccount("00004", "Yoo MinHo", new Date(), Person.Gender.MALE, 10000.00);
         account.deposit(4000000);
         account.debit(199);
         account.debit(135);
@@ -158,7 +216,12 @@ public class AccountService {
         }
 
         // refactor with java 8
-        
+        // find first
+        // toList
+        // group transactions
+        Map<Transaction.TransactionType, List<Transaction>> byType = account.getTransactions().stream().
+                collect(Collectors.groupingBy(Transaction::getTransactionType));
+
         return account;
     }
 }
